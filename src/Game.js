@@ -59,9 +59,12 @@ class Game extends React.Component {
   render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
-    const winner = calculateWinner(current.squares);
+    const winnerPositions = calculateWinner(current.squares);
+    const winner = winnerPositions ? current.squares[winnerPositions[0]] : winnerPositions;
     const currentSquare = 3 * (current.xStep - 1) + current.yStep - 1;
+    const currentSquares = winner ? winnerPositions : [currentSquare];
     const sortStepsAsc = this.state.sortStepsAsc;
+    console.log(currentSquares);
 
     const moves = [].concat(this.state.history)
     .map((step, move) => {
@@ -79,7 +82,6 @@ class Game extends React.Component {
     if (winner) {
       status = 'The winner is ' + winner;
     } else {
-      console.log(current);
       if (current.squares.indexOf(null) === -1) {
         status = 'The game ended in a draw!';
       } else {
@@ -91,7 +93,7 @@ class Game extends React.Component {
       <div className="game">
         <div className="game-board">
           <Board
-            currentSquare={currentSquare}
+            currentSquares={currentSquares}
             squares={current.squares}
             onClick={this.handleClick}
           />
@@ -121,7 +123,8 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      return [a, b, c];
+      // return squares[a];
     }
   }
 

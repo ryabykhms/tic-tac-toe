@@ -17,7 +17,7 @@ class Board extends React.Component {
         <div key={index} className="board-row">
           {squares.map((square, idx) => {
             return <Square key={idx}
-                           selected={square === this.props.currentSquare}
+                           selected={this.props.currentSquares.indexOf(square) !== -1}
                            value={this.props.squares[square]}
                            onClick={() => this.props.onClick(square)}
             />

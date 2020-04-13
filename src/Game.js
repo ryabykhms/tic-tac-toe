@@ -64,7 +64,6 @@ class Game extends React.Component {
     const currentSquare = 3 * (current.xStep - 1) + current.yStep - 1;
     const currentSquares = winner ? winnerPositions : [currentSquare];
     const sortStepsAsc = this.state.sortStepsAsc;
-    console.log(currentSquares);
 
     const moves = [].concat(this.state.history)
     .map((step, move) => {

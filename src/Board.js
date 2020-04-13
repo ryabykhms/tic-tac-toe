@@ -1,5 +1,5 @@
 import React from "react";
-import Square from "./Square";
+import BoardRow from "./BoardRow";
 
 class Board extends React.Component {
   renderBoardRows() {
@@ -14,15 +14,11 @@ class Board extends React.Component {
     }
     return boardRows.map((squares, index) => {
       return (
-        <div key={index} className="board-row">
-          {squares.map((square, idx) => {
-            return <Square key={idx}
-                           selected={this.props.currentSquares.indexOf(square) !== -1}
-                           value={this.props.squares[square]}
-                           onClick={() => this.props.onClick(square)}
-            />
-          })}
-        </div>
+        <BoardRow
+          key={index} currentSquares={this.props.currentSquares}
+          rowSquares={squares}
+          squares={this.props.squares}
+          onClick={this.props.onClick}/>
       );
     });
   }

@@ -98,7 +98,8 @@ class Game extends React.Component {
           />
         </div>
         <div className="game-info">
-          <input type="checkbox" checked={sortStepsAsc} onChange={this.handleChange}  />
+          <label>Sort History</label>
+          <input name="sortHistory" type="checkbox" checked={sortStepsAsc} onChange={this.handleChange}  />
           <div>{status}</div>
           <ol>{moves}</ol>
         </div>

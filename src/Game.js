@@ -10,7 +10,7 @@ class Game extends React.Component {
         xStep: null,
         yStep: null,
       }],
-      stepNumber: 0,
+      currentStepNumber: 0,
       xIsNext: true,
       sortStepsAsc: true,
     };
@@ -20,12 +20,12 @@ class Game extends React.Component {
   }
 
   handleClick(i) {
-    const history = this.state.history.slice(0, this.state.stepNumber + 1);
+    const history = this.state.history.slice(0, this.state.currentStepNumber + 1);
     const current = history[history.length - 1];
     const xStep = Math.floor(1 + i / 3);
     const yStep = i % 3 + 1;
     const squares = current.squares.slice();
-    if (calculateWinner(squares) || squares[i]) {
+    if (calculateWinner(squares).winner || squares[i]) {
       return;
     }
     squares[i] = this.state.xIsNext ? 'X' : 'O';
@@ -33,9 +33,10 @@ class Game extends React.Component {
       history: history.concat([{
         squares: squares,
         xStep: xStep,
-        yStep: yStep
+        yStep: yStep,
+        stepNumber: history.length,
       }]),
-      stepNumber: history.length,
+      currentStepNumber: history.length,
       xIsNext: !this.state.xIsNext,
     });
   }
@@ -51,41 +52,39 @@ class Game extends React.Component {
 
   jumpTo(step) {
     this.setState({
-      stepNumber: step,
+      currentStepNumber: step,
       xIsNext: (step % 2) === 0,
     })
   }
 
   render() {
     const history = this.state.history;
-    const current = history[this.state.stepNumber];
-    const winnerPositions = calculateWinner(current.squares);
-    const winner = winnerPositions ? current.squares[winnerPositions[0]] : winnerPositions;
+    const current = history[this.state.currentStepNumber];
+    const {winner, winnerRow} = calculateWinner(current.squares);
     const currentSquare = 3 * (current.xStep - 1) + current.yStep - 1;
-    const currentSquares = winner ? winnerPositions : [currentSquare];
+    const currentSquares = winner ? winnerRow : [currentSquare];
     const sortStepsAsc = this.state.sortStepsAsc;
 
     const moves = [].concat(this.state.history)
-    .map((step, move) => {
-      const desc = move ?
-        'Go to step #' + move + ' (' + step.xStep + ';' + step.yStep + ')' :
-        'Go to start game';
-      return (
-        <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{desc}</button>
-        </li>
-      );
-    }).sort();
+      .map((step, move) => {
+        const currentStepClass = this.state.currentStepNumber === move ? 'button--green' : '';
+        const desc = step.stepNumber ?
+          'Go to step #' + step.stepNumber + ' (' + step.xStep + ';' + step.yStep + ')' :
+          'Go to start game';
+        return (
+          <li key={move}>
+            <button className={`button ${currentStepClass}`} onClick={() => this.jumpTo(move)}>{desc}</button>
+          </li>
+        );
+      }).sort();
 
     let status;
     if (winner) {
       status = 'The winner is ' + winner;
+    } else if (history.length === 10) {
+      status = 'The game ended in a draw!';
     } else {
-      if (current.squares.indexOf(null) === -1) {
-        status = 'The game ended in a draw!';
-      } else {
-        status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
-      }
+      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
     }
 
     return (
@@ -98,8 +97,10 @@ class Game extends React.Component {
           />
         </div>
         <div className="game-info">
-          <label>Sort History</label>
-          <input name="sortHistory" type="checkbox" checked={sortStepsAsc} onChange={this.handleChange}  />
+          <label>Sort Moves
+            <input id="sort-moves" name="sort-moves" type="checkbox" checked={sortStepsAsc}
+                   onChange={this.handleChange}/>
+          </label>
           <div>{status}</div>
           <ol>{moves}</ol>
         </div>
@@ -123,12 +124,11 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return [a, b, c];
-      // return squares[a];
+      return {winner: squares[a], winnerRow: lines[i]};
     }
   }
 
-  return null;
+  return {winner: null, winnerRow: null};
 }
 
 export default Game;

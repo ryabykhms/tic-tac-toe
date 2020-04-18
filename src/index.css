@@ -5,6 +5,7 @@ body {
 
 ol, ul {
   padding-left: 30px;
+  width: 150px;
 }
 
 .board-row:after {
@@ -36,6 +37,10 @@ ol, ul {
   outline: none;
 }
 
+.square.selected {
+  background: #999999;
+}
+
 .kbd-navigation .square:focus {
   background: #ddd;
 }
@@ -47,4 +52,12 @@ ol, ul {
 
 .game-info {
   margin-left: 20px;
+}
+
+.button {
+  width: 100%;
+}
+
+.button--green {
+  background: limegreen;
 }
